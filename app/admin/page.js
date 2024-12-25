@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import AllUsers from './AllUsers';
 import AddContest from './AddContest';
+import AllContests from './AllContests';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('allUsers');
@@ -12,7 +13,7 @@ const AdminPage = () => {
       case 'allUsers':
         return <AllUsers />;
       case 'allContests':
-        return <p className="text-gray-700">Displaying all contests.</p>;
+        return <AllContests />;
       case 'allProblems':
         return <p className="text-gray-700">Displaying all problems.</p>;
       case 'addContest':

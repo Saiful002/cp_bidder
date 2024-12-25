@@ -3,18 +3,28 @@ import React, { useState } from "react";
 
 export default function AddContest() {
   const [contestName, setContestName] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startTime, setStartTime] = useState(""); // Date and time
+  const [endTime, setEndTime] = useState(""); // Date and time
   const [status, setStatus] = useState("Scheduled"); // Default status
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Prepare the payload
+    if(startTime < new Date().toISOString()) {
+        alert("Start time cannot be in the past.");
+        return;
+    }
+
+    if(startTime >= endTime) {
+        alert("End time must be after start time.");
+        return;
+    }
+
+    // Prepare the payload with both date and time
     const payload = {
       name: contestName,
-      startTime: startTime + " 00:00:00", // Add default time for simplicity
-      endTime: endTime + " 00:00:00", // Add default time for simplicity
+      startTime: startTime, // 'startTime' will now have both date and time
+      endTime: endTime, // 'endTime' will also have both date and time
       status,
     };
 
@@ -63,13 +73,13 @@ export default function AddContest() {
             />
           </div>
 
-          {/* Start Time */}
+          {/* Start Time (Date and Time) */}
           <div className="mb-4">
             <label className="block text-black mb-2 font-medium">
               Start Time
             </label>
             <input
-              type="date"
+              type="datetime-local" // Allows both date and time selection
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               className="border-black text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -77,13 +87,13 @@ export default function AddContest() {
             />
           </div>
 
-          {/* End Time */}
+          {/* End Time (Date and Time) */}
           <div className="mb-4">
             <label className="block text-black mb-2 font-medium">
               End Time
             </label>
             <input
-              type="date"
+              type="datetime-local" // Allows both date and time selection
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
               className="border-black text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
