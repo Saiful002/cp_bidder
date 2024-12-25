@@ -5,12 +5,12 @@ export default function HeroSection() {
   return (
     <section className="relative bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 text-white py-16 px-6 text-center h-screen flex items-center justify-center overflow-hidden">
       {/* Background Layer */}
-      <div
+      {/* <div
         className="absolute inset-0 bg-cover bg-center opacity-10 z-0"
         style={{
           backgroundImage: "url('/path/to/your/background-image.jpg')",
         }}
-      ></div>
+      ></div> */}
 
       {/* Content */}
       <div className="relative z-10 max-w-5xl">

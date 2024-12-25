@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AllUsers from './AllUsers';
 import AddContest from './AddContest';
 import AllContests from './AllContests';
@@ -7,6 +7,20 @@ import AllContests from './AllContests';
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('allUsers');
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+
+  // Load the active tab from localStorage when the component mounts
+useEffect(() => {
+  const savedTab = localStorage.getItem("activeTab");
+  if (savedTab) {
+    setActiveTab(savedTab);
+  }
+}, []);
+
+// Save the active tab to localStorage whenever it changes
+useEffect(() => {
+  localStorage.setItem("activeTab", activeTab);
+}, [activeTab]);
+
 
   const renderContent = () => {
     switch (activeTab) {
