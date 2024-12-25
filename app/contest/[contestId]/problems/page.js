@@ -1,23 +1,59 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { use } from 'react';
+import Link from "next/link";
+import { useState, useEffect, use } from "react";
 
 const ProblemsPage = ({ params }) => {
-  const { contestId } = use(params);
+  const { contestId } = use(params); // Directly destructure contestId from params
 
+  // State to store the problems data
+  const [problems, setProblems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const problems = [
-    { id: 1, title: 'Problem 1', difficulty: 'Easy' },
-    { id: 2, title: 'Problem 2', difficulty: 'Medium' },
-    { id: 3, title: 'Problem 3', difficulty: 'Hard' },
-  ];
+  // Fetch problems data on component mount
+  useEffect(() => {
+    const fetchProblems = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:9090/getContestProblems?contest_id=${contestId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch problems");
+        }
+        const data = await response.json();
+        setProblems(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProblems();
+  }, [contestId]); // Only re-run when contestId changes
 
   const difficultyColors = {
-    Easy: 'bg-green-600',
-    Medium: 'bg-sky-500',
-    Hard: 'bg-red-700',
+    Easy: "bg-green-600",
+    Medium: "bg-sky-500",
+    Hard: "bg-red-700",
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-gray-100 p-6 flex items-center justify-center">
+        <p>Loading problems...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-gray-100 p-6 flex items-center justify-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-gray-100 p-6 flex flex-col items-center">
@@ -30,17 +66,12 @@ const ProblemsPage = ({ params }) => {
           {problems.map((problem) => (
             <li
               key={problem.id}
-              className={`relative p-6 rounded-lg shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300 ${difficultyColors[problem.difficulty]}`}
+              className={`bg-teal-500  relative p-6 rounded-lg shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300`}
             >
-              <h2 className="text-2xl font-bold mb-2 text-white">{problem.title}</h2>
-              <p className="text-md font-medium text-white mb-2">
-                <strong>Difficulty:</strong> {problem.difficulty}
-              </p>
-              <p className="text-sm text-gray-200 mb-4">
-                Challenge yourself with this {problem.difficulty.toLowerCase()}-level problem and
-                improve your skills.
-              </p>
-              <div className="absolute bottom-4 right-4">
+              <h2 className="text-2xl font-bold mb-2 text-white">
+                {problem.name}
+              </h2>
+              <div className="bottom-4 right-4">
                 <Link
                   href={`/contest/${contestId}/${problem.id}`}
                   className="px-4 py-2 text-sm font-semibold bg-gray-100 text-gray-900 rounded-full shadow hover:bg-yellow-500 transition"
@@ -52,8 +83,6 @@ const ProblemsPage = ({ params }) => {
           ))}
         </ul>
       </div>
-      
-        
     </div>
   );
 };

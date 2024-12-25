@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import AllUsers from './AllUsers';
 import AddContest from './AddContest';
 import AllContests from './AllContests';
+import AddProblem from './AddProblem';
+import AllProblems from './AllProblems';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('allUsers');
@@ -29,52 +31,11 @@ useEffect(() => {
       case 'allContests':
         return <AllContests />;
       case 'allProblems':
-        return <p className="text-gray-700">Displaying all problems.</p>;
+        return <AllProblems />
       case 'addContest':
         return <AddContest />
       case 'addProblems':
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-indigo-600">
-              Add Problem
-            </h2>
-            <form>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-medium">
-                  Problem Title
-                </label>
-                <input
-                  type="text"
-                  className="border text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  placeholder="Enter problem title"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-medium">
-                  Problem Title
-                </label>
-                <input
-                  type="text"
-                  className="border text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  placeholder="Enter problem title"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-medium">
-                  Difficulty
-                </label>
-                <select className="border text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                  <option>Easy</option>
-                  <option>Medium</option>
-                  <option>Hard</option>
-                </select>
-              </div>
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
-                Add Problem
-              </button>
-            </form>
-          </div>
-        );
+        return <AddProblem />;
       case 'formTeams':
         return <p className="text-gray-700">Forming teams functionality here.</p>;
       default:

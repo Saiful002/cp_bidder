@@ -10,10 +10,10 @@ export default function AddContest() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(startTime < new Date().toISOString()) {
-        alert("Start time cannot be in the past.");
-        return;
-    }
+    // if(startTime < new Date().toISOString()) {
+    //     alert("Start time cannot be in the past.");
+    //     return;
+    // }
 
     if(startTime >= endTime) {
         alert("End time must be after start time.");
@@ -29,7 +29,7 @@ export default function AddContest() {
     };
 
     try {
-      const response = await fetch("http://localhost:9090/add", {
+      const response = await fetch("http://localhost:9090/addContest", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

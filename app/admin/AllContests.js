@@ -8,7 +8,7 @@ export default function AllContests() {
   useEffect(() => {
     const fetchContests = async () => {
       try {
-        const response = await fetch("http://localhost:9090/all");
+        const response = await fetch("http://localhost:9090/getAllContests");
         if (response.ok) {
           const data = await response.json();
           setContests(data);
