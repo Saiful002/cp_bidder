@@ -1,29 +1,75 @@
-'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 const ContestPage = () => {
   const [contests, setContests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch contests from the backend API
   useEffect(() => {
     const fetchContests = async () => {
+      setLoading(true);
       try {
         const response = await fetch("http://localhost:9090/getAllContests");
-        if (response.ok) {
-          const data = await response.json();
-          setContests(data); // Store the contest data in state
-        } else {
-          alert("Failed to load contests");
+        if (!response.ok) {
+          throw new Error("Failed to load contests");
         }
+        const data = await response.json();
+
+        // Update the status if start time has passed
+        const updatedContests = data.map((contest) => {
+          const currTime = new Date().toISOString();
+
+          console.log(currTime);
+          console.log(contest.start_time);
+
+          console.log(contest.start_time < currTime);
+          console.log(contest.status);
+
+          if (contest.start_time < currTime && contest.status === "Scheduled") {
+            console.log("i am here");
+            contest.status = "ongoing";
+            updateContestStatus(contest.id, "Ongoing"); // Update status in the backend
+          }
+          return contest;
+        });
+
+        setContests(updatedContests);
       } catch (error) {
+        setError(error.message);
         console.error("Error fetching contests:", error);
-        alert("An error occurred while fetching contests");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchContests();
   }, []);
+
+  // Function to update the contest status in the backend
+  const updateContestStatus = async (contestId, status) => {
+    try {
+      const response = await fetch(
+        "http://localhost:9090/updateContestStatus",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ contest_id: contestId, status }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update contest status");
+      }
+      console.log(`Contest ${contestId} status updated to ${status}`);
+    } catch (error) {
+      console.error("Error updating contest status:", error);
+    }
+  };
 
   // Function to calculate the duration between start and end times
   const calculateDuration = (startTime, endTime) => {
@@ -37,6 +83,24 @@ const ContestPage = () => {
 
     return `${hours} hours ${minutes} minutes`;
   };
+
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center">
+        <p className="text-white text-xl">Loading contests...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 flex items-center justify-center">
+        <p className="text-white text-xl">{`Error: ${error}`}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700">
@@ -64,21 +128,18 @@ const ContestPage = () => {
                 <strong>Start:</strong>{" "}
                 {new Date(contest.start_time).toLocaleString()}
               </p>
-              {/* <p className="text-gray-200 mb-2">
-                <strong>End:</strong>{" "}
-                {new Date(contest.end_time).toLocaleString()}
-              </p> */}
 
               {/* Display duration */}
               <p className="text-gray-200 mb-2">
-                <strong>Duration:</strong> {calculateDuration(contest.start_time, contest.end_time)}
+                <strong>Duration:</strong>{" "}
+                {calculateDuration(contest.start_time, contest.end_time)}
               </p>
 
               <strong>
                 Status:{" "}
                 <p
                   className={`mb-4 ${
-                    contest.status === "Upcoming"
+                    contest.status === "upcoming"
                       ? "text-yellow-500"
                       : "text-lime-400"
                   }`}
