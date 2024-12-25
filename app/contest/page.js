@@ -149,10 +149,10 @@ const ContestPage = () => {
               </strong>
 
               <Link
-                href={`/contest/${contest.id}`}
+                href={`contest/${contest.id}/register`}
                 className="inline-block bg-teal-800 text-white py-2 px-4 rounded-md hover:bg-yellow-500 hover:text-gray-900 transition-colors duration-300"
               >
-                View Contest
+                Register
               </Link>
             </div>
           ))
