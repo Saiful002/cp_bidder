@@ -17,6 +17,15 @@ export default function Navbar() {
   // Hide Login and Register on contest and problem pages
   const hideAuthLinks = isContestPage || isProblemPage;
 
+  // get data from local storage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const handle = user?.handle;
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/auth/login";
+  }
+
   return (
     <nav className="bg-gray-900 border-b-2 border-cyan-500 text-white px-4 py-5 flex items-center">
       {/* Center the logo or title */}
@@ -24,12 +33,21 @@ export default function Navbar() {
         <Link href="/" className="text-lg font-bold">CP Clone</Link>
       </div>
 
+
       {/* Conditionally render Login and Register links */}
-      {!hideAuthLinks && (
+      {!hideAuthLinks && !handle && (
         <div className="flex justify-center items-center space-x-3 w-full">
           <Link href={"/"} className="hover:underline hover:text-yellow-500 transition-colors">Home</Link>
           <Link href="../auth/login" className="hover:underline hover:text-yellow-500 transition-colors">Login</Link>
           <Link href="../auth/register" className="hover:underline hover:text-yellow-500 transition-colors">Register</Link>
+        </div>
+      )}
+
+      {!hideAuthLinks && handle && ( // Conditionally render the user handle if available}
+        <div className="flex justify-center items-center space-x-3 w-full">
+          <Link href={"/"} className="hover:underline hover:text-yellow-500 transition-colors">Home</Link>
+          <Link href={"/profile"} className="hover:underline hover:text-yellow-500 transition-colors capitalize">{handle}</Link>
+          <button onClick={handleLogout} className="hover:underline hover:text-yellow-500 transition-colors">Logout</button>
         </div>
       )}
 

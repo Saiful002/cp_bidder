@@ -1,5 +1,7 @@
 "use client"
 import { useState } from 'react';
+import AllUsers from './AllUsers';
+import AddContest from './AddContest';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('allUsers');
@@ -8,44 +10,24 @@ const AdminPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'allUsers':
-        return <p className="text-gray-700">Displaying all users.</p>;
+        return <AllUsers />;
       case 'allContests':
         return <p className="text-gray-700">Displaying all contests.</p>;
       case 'allProblems':
         return <p className="text-gray-700">Displaying all problems.</p>;
       case 'addContest':
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-indigo-600">Add Contest</h2>
-            <form>
-              <div className="mb-4">
-                <label className="block text-black mb-2 font-medium">Contest Name</label>
-                <input
-                  type="text"
-                  className="border-black text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                  placeholder="Enter contest name"
-                />
-              </div>
-              <div className="mb-4 text-black ">
-                <label className="block mb-2 font-medium">Date</label>
-                <input
-                  type="date"
-                  className="border-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                />
-              </div>
-              <button className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
-                Add Contest
-              </button>
-            </form>
-          </div>
-        );
+        return <AddContest />
       case 'addProblems':
         return (
           <div>
-            <h2 className="text-2xl font-bold mb-4 text-indigo-600">Add Problem</h2>
+            <h2 className="text-2xl font-bold mb-4 text-indigo-600">
+              Add Problem
+            </h2>
             <form>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-medium">Problem Title</label>
+                <label className="block text-gray-700 mb-2 font-medium">
+                  Problem Title
+                </label>
                 <input
                   type="text"
                   className="border text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
@@ -53,7 +35,19 @@ const AdminPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-medium">Difficulty</label>
+                <label className="block text-gray-700 mb-2 font-medium">
+                  Problem Title
+                </label>
+                <input
+                  type="text"
+                  className="border text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  placeholder="Enter problem title"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2 font-medium">
+                  Difficulty
+                </label>
                 <select className="border text-black rounded w-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
                   <option>Easy</option>
                   <option>Medium</option>
