@@ -5,6 +5,7 @@ import AddContest from './AddContest';
 import AllContests from './AllContests';
 import AddProblem from './AddProblem';
 import AllProblems from './AllProblems';
+import EditContest from './EditContest/page';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('allUsers');
@@ -36,6 +37,8 @@ useEffect(() => {
         return <AddContest />
       case 'addProblems':
         return <AddProblem />;
+      case 'editContest':
+        return <EditContest />;
       case 'formTeams':
         return <p className="text-gray-700">Forming teams functionality here.</p>;
       default:

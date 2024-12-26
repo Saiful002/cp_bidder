@@ -53,6 +53,7 @@ export default function Register() {
 
       // Red console.log(JSON.stringify(formData));irect to login or show success message
       alert("Registration successful! You can now log in.");
+      window.location.href = "/auth/login";
 
       console.log(response);
     } catch (error) {

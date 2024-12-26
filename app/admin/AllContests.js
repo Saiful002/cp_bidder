@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 export default function AllContests() {
   const [contests, setContests] = useState([]);
@@ -38,6 +39,26 @@ export default function AllContests() {
     return date.toLocaleString("en-GB", options); // 'en-GB' for full month name and time
   };
 
+  // Function to handle redirection to edit contest page
+  const handleEditClick = (contestId) => {
+    window.location.href = `/admin/EditContest?contestId=${contestId}`; // Redirect to the editContest page with
+  };
+
+  const handleDelete = async (contestId) => {
+    // alert("Are you sure you want to delete this contest?");
+    if(confirm("Are you sure you want to delete this contest?")){
+      const response = await fetch(`http://localhost:4000/deleteContest?contest_id=${contestId}`, {
+        method: "DELETE",
+      });
+      if(response.ok){
+        alert("Contest deleted successfully");
+        window.location.reload();
+      }else{
+        alert("Failed to delete contest");
+      }
+    }
+  }
+
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4 text-indigo-600">All Contests</h2>
@@ -52,6 +73,8 @@ export default function AllContests() {
             <th className="py-2 px-4">End Time</th>
             <th className="py-2 px-4">Status</th>
             <th className="py-2 px-4">Created At</th>
+            <th className="py-2 px-4">Action</th>{" "}
+            {/* New column for action button */}
           </tr>
         </thead>
         <tbody>
@@ -70,11 +93,26 @@ export default function AllContests() {
                 <td className="py-2 px-4">
                   {formatDateTime(contest.created_at)}
                 </td>
+                <td className="py-2 px-4">
+                  {/* Action button */}
+                  <button
+                    onClick={() => handleEditClick(contest.id)} // On click, redirect to edit page
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(contest.id)} // On click, redirect to edit page
+                    className="bg-blue-500 text-white px-4 py-2 ms-2 mt-2 rounded-lg hover:bg-blue-600"
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="6" className="py-4 text-center">
+              <td colSpan="7" className="py-4 text-center">
                 No contests available
               </td>
             </tr>

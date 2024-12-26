@@ -8,7 +8,7 @@ export default function Login() {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState(null);
-  const router = useRouter(); // Initialize the router
+  // const router = useRouter(); // Initialize the router
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +42,7 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(responseData));
 
       // Redirect to contest page
-      router.push("/contest");
+      window.location.href = "/contest";
     } catch (error) {
       setErrorMessage("An error occurred. Please try again.");
     }
@@ -96,10 +96,10 @@ export default function Login() {
 
         <div className="text-center mt-4">
           <a
-            href="../auth/forget-password"
+            href="../auth/register"
             className="text-sm text-purple-300 hover:text-purple-500 transition duration-300"
           >
-            Forgot Password?
+            Do not have an account? Sign up
           </a>
         </div>
       </div>
