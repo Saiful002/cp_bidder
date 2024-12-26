@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 
 const ProblemsPage = ({ params }) => {
-  const { contestId } = params; // Directly destructure contestId from params
+  const { contestId } = use(params); // Directly destructure contestId from params
 
   // State to store the problems data
   const [problems, setProblems] = useState([]);

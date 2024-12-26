@@ -1,43 +1,86 @@
 "use client";
-import { useState, use } from "react";
+
+import React, { use, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SubmitSolutionPage = ({ params }) => {
   const { contestId, problemId } = use(params);
   const [code, setCode] = useState("");
+  const [verdict, setVerdict] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = () => {
-    if (code.trim() === "") {
-      alert("Please write some code before submitting!");
-      return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setVerdict("");
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userId = user?.userId;
+
+    try {
+      const response = await fetch("http://localhost:4000/addSubmission", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId, // Adjust based on your authentication logic
+          contestId,
+          problemId,
+          code,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setVerdict(data.verdict);
+        console.log(data);
+      } else {
+        const data = await response.json();
+        setError(data.error || "Submission failed.");
+      }
+    } catch (err) {
+      console.error("Error submitting solution:", err);
+      setError("An error occurred while submitting your solution.");
     }
-    // Handle the code submission logic (e.g., API call)
-    alert(
-      `Solution submitted for Problem ${problemId} of Contest ${contestId}!`
-    );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-gray-100 p-6 flex flex-col items-center">
-      <h1 className="text-4xl sm:text-5xl font-bold text-teal-400 mb-8 animate__animated animate__fadeInDown">
-        Submit Solution for Problem {problemId}
-      </h1>
-
-      <div className="w-full max-w-3xl p-6 bg-gray-800 rounded-lg shadow-lg mb-6">
-        <h2 className="text-2xl font-bold text-white mb-4">Write Your Code</h2>
+    <div className="min-h-screen bg-gray-800 text-white flex flex-col items-center p-6">
+      <h1 className="text-4xl font-bold text-teal-400 mb-4">Submit Solution</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-lg bg-gray-900 p-6 rounded-lg shadow-lg"
+      >
         <textarea
-          className="w-full h-64 p-4 bg-gray-900 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="// Write your code here"
-        />
-      </div>
+          className="w-full bg-gray-800 text-gray-300 p-4 rounded-lg mb-4"
+          placeholder="Enter your solution code here..."
+          rows="6"
+          required
+        ></textarea>
+        <button
+          type="submit"
+          className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full text-lg font-semibold"
+        >
+          Submit
+        </button>
+      </form>
 
-      <button
-        className="bg-teal-500 text-white px-6 py-3 rounded-full mt-8 text-lg font-semibold shadow-lg hover:bg-teal-600 transition duration-300"
-        onClick={handleSubmit}
-      >
-        Submit Code
-      </button>
+      {verdict && (verdict === "Wrong" || verdict==="Compilation Error") && (
+        <p className="mt-4 text-2xl font-bold text-red-500">
+          Verdict: {verdict}
+        </p>
+      )}
+
+      {verdict === "Accepted" && (
+        <p className="mt-4 text-2xl font-bold text-green-500">
+          Verdict: {verdict}
+        </p>
+      )}
+
+      {error && (
+        <p className="mt-4 text-xl font-bold text-red-500">Error: {error}</p>
+      )}
     </div>
   );
 };

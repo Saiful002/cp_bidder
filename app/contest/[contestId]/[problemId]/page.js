@@ -1,102 +1,76 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import React, { useState, useEffect, use } from "react";
 
-const SingleProblemPage = () => {
-  const { contestId, problemId } = useParams();
-  const [problem, setProblem] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+const SingleProblemPage = ({ params }) => {
+  const { contestId, problemId } = use(params);
+  const [problemData, setProblemData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch single problem data
   useEffect(() => {
-    const fetchProblem = async () => {
+    const fetchProblemData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:9090/getSingleProblem?problem_id=${problemId}`
+          `http://localhost:4000/getSingleProblem?problem_id=${problemId}`
         );
-        if (response.ok) {
-          const data = await response.json();
-          setProblem(data);
-        } else {
-          setError("Failed to load problem data.");
+        if (!response.ok) {
+          throw new Error("Problem not found");
         }
+        const data = await response.json();
+        setProblemData(data);
       } catch (err) {
-        console.error("Error fetching problem data:", err);
-        setError("An error occurred while fetching problem data.");
+        setError(err.message);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchProblem();
+    fetchProblemData();
   }, [problemId]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-800 text-white text-xl">
-        Loading problem data...
-      </div>
-    );
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
-  if (error || !problem) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-800 text-red-500 font-bold text-2xl">
-        {error || "Problem not found!"}
-      </div>
-    );
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  const handleClick = () => {
+    // Redirect to the submit solution page
+    window.location.href = `/contest/${contestId}/${problemId}/submit`;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-gray-100 p-6 flex flex-col items-center">
       <h1 className="text-4xl sm:text-5xl font-bold text-teal-400 mb-8 animate__animated animate__fadeInDown">
-        {problem.name}
+        {problemData.name}
       </h1>
 
       <div className="w-full max-w-3xl p-6 bg-gray-800 rounded-lg shadow-lg mb-6">
         <h2 className="text-2xl font-bold text-white mb-4">
           Problem Description
         </h2>
-        <p className="text-gray-300 mb-4">{problem.statement}</p>
+        <p className="text-gray-300 mb-4">{problemData.statement}</p>
 
-        <h3 className="text-xl font-semibold text-gray-200 mt-6 mb-2">Input</h3>
-        <p className="text-gray-300 mb-4">{problem.sample_input}</p>
+        <h3 className="text-xl font-semibold text-gray-200 mt-6 mb-2">Constraints</h3>
+        <p className="text-gray-300 mb-4">{problemData.constraints}</p>
 
-        <h3 className="text-xl font-semibold text-gray-200 mb-2">Output</h3>
-        <p className="text-gray-300 mb-4">{problem.sample_output}</p>
+        <h3 className="text-xl font-semibold text-gray-200 mb-2">Sample Input</h3>
+        <p className="text-gray-300 mb-4">{problemData.sample_input}</p>
 
         <h3 className="text-xl font-semibold text-gray-200 mb-2">
-          Constraints
+          Sample Output
         </h3>
-        <p className="text-gray-300 mb-4">{problem.constraints}</p>
+        <p className="text-gray-300 mb-4">{problemData.sample_output}</p>
 
-        {/* {problem.examples &&
-          problem.examples.map((example, index) => (
-            <div key={index} className="mb-4">
-              <h3 className="text-xl font-semibold text-gray-200 mb-2">
-                Example {index + 1}
-              </h3>
-              <p className="text-gray-300 mb-2">
-                <strong>Input:</strong> <br />
-                {example.input}
-              </p>
-              <p className="text-gray-300">
-                <strong>Output:</strong> <br />
-                {example.output}
-              </p>
-            </div>
-          ))} */}
+        
       </div>
 
-      <Link
-        href={`/contests/${contestId}/${problemId}/submit`}
-        className="bg-teal-500 text-white px-6 py-3 rounded-full mt-8 text-lg font-semibold shadow-lg hover:bg-teal-600 transition duration-300"
-      >
+      <button className="bg-teal-500 text-white px-6 py-3 rounded-full mt-8 text-lg font-semibold shadow-lg hover:bg-teal-600 transition duration-300" onClick={handleClick}>
         Submit Solution
-      </Link>
+      </button>
     </div>
   );
 };

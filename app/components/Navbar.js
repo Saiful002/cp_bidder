@@ -66,7 +66,8 @@ export default function Navbar() {
           <Link href={"/"} className="hover:underline">Home</Link>
           <Link href={`${pathname}/statement`} className="hover:underline hover:text-yellow-500 transition-colors">Statement</Link>
           <Link href={`${pathname}/submit`} className="hover:underline hover:text-green-500 transition-colors">Submit</Link>
-          <Link href={`${contestBasePath}/ranking`} className="hover:underline hover:text-redyy-500 transition-colors">Ranking</Link>
+          <Link href={`${contestBasePath}/ranking`} className="hover:underline hover:text-red-500 transition-colors">Ranking</Link>
+          <Link href={`${pathname}/submissionHistory`} className="hover:underline hover:text-red-500 transition-colors">Submission History</Link>
         </div>
       )}
     </nav>
