@@ -46,7 +46,9 @@ export default function Navbar() {
       {!hideAuthLinks && handle && ( // Conditionally render the user handle if available}
         <div className="flex justify-center items-center space-x-3 w-full">
           <Link href={"/"} className="hover:underline hover:text-yellow-500 transition-colors">Home</Link>
+          <Link href={`/contest`} className="hover:underline hover:text-yellow-500 transition-colors">Contest</Link>
           <Link href={"/profile"} className="hover:underline hover:text-yellow-500 transition-colors capitalize">{handle}</Link>
+
           <button onClick={handleLogout} className="hover:underline hover:text-yellow-500 transition-colors">Logout</button>
         </div>
       )}
@@ -56,7 +58,6 @@ export default function Navbar() {
           <Link href={"/"} className="hover:underline">Home</Link>
           <Link href={`${contestBasePath}/problems`} className="hover:underline hover:text-yellow-500 transition-colors">Problems</Link>
           <Link href={`${contestBasePath}/ranking`} className="hover:underline hover:text-yellow-500 transition-colors">Ranking</Link>
-          <Link href={`${contestBasePath}/teams`} className="hover:underline hover:text-yellow-500 transition-colors">Teams</Link>
           <Link href={`${contestBasePath}/vote`} className="hover:underline hover:text-yellow-500 transition-colors">Vote</Link>
         </div>
       )}

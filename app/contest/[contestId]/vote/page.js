@@ -1,6 +1,7 @@
 "use client";
 import { use, useEffect, useState } from "react";
 import { redirect } from "next/navigation";
+import Timer from "@/components/Timer";
 
 const VotePage = ({params}) => {
   const { contestId } = use(params);
@@ -8,7 +9,8 @@ const VotePage = ({params}) => {
   const [round, setRound] = useState(1);
   const [voteData, setVoteData] = useState([]);
   const [selectedProblem, setSelectedProblem] = useState(null);
-  const [voteTime, setVoteTime] = useState(false);
+  const [voteTime, setVoteTime] = useState(true);
+  const [start_time, setStartTime] = useState(null);
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -18,6 +20,7 @@ const VotePage = ({params}) => {
         );
         const data = await response.json();
         setProblems(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching contest problems:", error);
       }
@@ -32,17 +35,21 @@ const VotePage = ({params}) => {
     const fetchContestData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4000/getContests?contest_id=${contestId}`
+          `http://localhost:4000/getContestById?contest_id=${contestId}`
         );
         const data = await response.json();
-        const startTime = new Date(data.start_time).toISOString();
+        const startTime = new Date(data.start_time);
         const currentTime = new Date();
         const curr = currentTime.toISOString();
-        console.log("Start time:", startTime);
+
+        // setStartTime(startTimePlus50Min);
+        const st = startTime.toISOString();
+
+        console.log("Start time:", st);
         console.log("Current time:", curr)
 
-        if (startTime < curr) {
-          setVoteTime(true);
+        if (st < curr) {
+          setVoteTime(false);
         }
       } catch (error) {
         console.error("Error fetching contest data:", error);
@@ -57,6 +64,8 @@ const VotePage = ({params}) => {
   if(!voteTime) {
     redirect(`/contest/${contestId}/problems`);
   }
+
+  console.log("Problems:", problems); 
 
   const getVotedProblems = () => {
     const votedProblems =
@@ -115,11 +124,20 @@ const VotePage = ({params}) => {
 
   const remainingProblems = problems.filter((problem) => {
     const votedProblems = getVotedProblems();
-    if (votedProblems.length === problems.length) {
-      redirect(`/contest/${contestId}/problems`);
-    }
+    // for(let i=0; i<votedProblems.lengh; i++){
+
+    // }
+    // console.log(votedProblems)
+    // if (votedProblems.length === problems.length) {
+    //   // redirect(`/contest/${contestId}/problems`);
+    // }
     return !votedProblems.includes(problem.id);
   });
+
+  const redirectToProblems = () => {
+    window.location.href = `/contest/${contestId}/problems`;
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-gray-100 p-6">
@@ -158,7 +176,9 @@ const VotePage = ({params}) => {
                 ))}
               </div>
             ) : (
-              <p className="text-xl text-red-400">No problems left to vote!</p>
+              <button onClick={redirectToProblems} className="bg-gray-600 text-gray-300 text-lg py-2 px-4 rounded-full">
+                Go to problems
+              </button>
             )}
           </div>
 

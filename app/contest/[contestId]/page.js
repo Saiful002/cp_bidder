@@ -33,6 +33,8 @@ export default function RegisterPage({ params }) {
         }),
       });
 
+      
+
       if (response.ok) {
         const result = await response.json();
         setMessage(

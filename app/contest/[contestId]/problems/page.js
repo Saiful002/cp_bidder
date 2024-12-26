@@ -1,13 +1,15 @@
 "use client";
 
+import Timer from "@/components/Timer";
 import Link from "next/link";
 import { useState, useEffect, use } from "react";
 
 const ProblemsPage = ({ params }) => {
-  const { contestId } = use(params); // Directly destructure contestId from params
+  const { contestId } = use(params);
 
   // State to store the problems data
   const [problems, setProblems] = useState([]);
+  const [contestData, setContestData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -34,7 +36,7 @@ const ProblemsPage = ({ params }) => {
         const contestData = await contestResponse.json();
 
         const { start_time, end_time } = contestData;
-        const duration = new Date(end_time) - new Date(start_time); // Duration in milliseconds
+        let duration = new Date(end_time) - new Date(start_time); // Duration in milliseconds
 
         // Calculate the time slot for each problem
         const problemDuration = duration / data.length;
@@ -54,11 +56,27 @@ const ProblemsPage = ({ params }) => {
         setProblems(problemsWithSlots);
       } catch (err) {
         setError(err.message);
+      }
+    };
+
+    const fetchContest = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/getContestById?contest_id=${contestId}`
+        );
+        if (!response.ok) {
+          throw new Error("Contest not found");
+        }
+        const data = await response.json();
+        setContestData(data);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
+    fetchContest();
     fetchProblems();
   }, [contestId]); // Only re-run when contestId changes
 
@@ -78,45 +96,68 @@ const ProblemsPage = ({ params }) => {
     );
   }
 
+  console.log(contestData);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 text-gray-100 p-6 flex flex-col items-center">
       {/* Page Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl sm:text-5xl font-bold text-teal-400 animate__animated animate__fadeInDown mb-4">
-          Problems for Contest {contestId}
-        </h1>
-        <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-          {problems.map((problem) =>
-            // Check if current time is within the time slot of the problem
-            new Date(problem.start_time).getTime() < Date.now() &&
-            Date.now() < new Date(problem.end_time).getTime() ? (
-              <li
-                key={problem.id}
-                className={`bg-teal-500 relative p-6 rounded-lg shadow-lg transform hover:scale-105 hover:shadow-2xl transition-all duration-300`}
-              >
-                <h2 className="text-2xl font-bold mb-2 text-white">
-                  {problem.name}
-                </h2>
-                <p className="text-sm text-gray-300 mb-4">
-                  Total Bids: {problem.total_bids}
-                </p>
-                <p className="text-sm text-gray-300 mb-4">
-                  Time Slot: {new Date(problem.start_time).toLocaleTimeString()}{" "}
-                  - {new Date(problem.end_time).toLocaleTimeString()}
-                </p>
-                <div className="bottom-4 right-4">
-                  <Link
-                    href={`/contest/${contestId}/${problem.id}`}
-                    className="px-4 py-2 text-sm font-semibold bg-gray-100 text-gray-900 rounded-full shadow hover:bg-yellow-500 transition"
-                  >
-                    Solve Now
-                  </Link>
-                </div>
-              </li>
-            ) : null
-          )}
-        </ul>
-      </div>
+      {contestData.status==="Ongoing" ? (
+        <div className="text-center mb-8">
+          <h1 className="text-4xl sm:text-5xl font-bold text-teal-400 animate__animated animate__fadeInDown mb-4">
+            Problems for {contestData?.name}
+          </h1>
+          <ul className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+            {problems.map((problem) => {
+              const isActive =
+                new Date(problem.start_time).getTime() < Date.now() &&
+                Date.now() < new Date(problem.end_time).getTime();
+
+              return (
+                <li
+                  key={problem.id}
+                  className={`relative p-6 rounded-lg shadow-lg transform transition-all duration-300 ${
+                    isActive
+                      ? "bg-teal-500 hover:scale-105 hover:shadow-2xl"
+                      : "bg-gray-700"
+                  }`}
+                >
+                  <h2 className="text-2xl font-bold mb-2 text-white">
+                    {problem.name}
+                  </h2>
+                  <p className="text-sm text-gray-300 mb-4">
+                    Total Bids: {problem.total_bids}
+                  </p>
+                  <p className="text-sm text-gray-300 mb-4">
+                    Time Slot:{" "}
+                    {new Date(problem.start_time).toLocaleTimeString()} -{" "}
+                    {new Date(problem.end_time).toLocaleTimeString()}
+                  </p>
+                  {isActive ? (
+                    <div className="absolute bottom-4 right-4">
+                      <Link
+                        href={`/contest/${contestId}/${problem.id}`}
+                        className="px-4 py-2 text-sm font-semibold bg-gray-100 text-gray-900 rounded-full shadow hover:bg-yellow-500 transition"
+                      >
+                        Solve Now
+                      </Link>
+                    </div>
+                  ) : (
+                    null
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : (
+        <div className="text-center mb-8">
+          {/* Show the timer until the contest starts */}
+          <h1 className="text-4xl sm:text-5xl font-bold text-teal-400 animate__animated animate__fadeInDown mb-4">
+            Contest starts in:
+          </h1>
+          <Timer startTime={contestData?.start_time} />
+        </div>
+      )}
     </div>
   );
 };

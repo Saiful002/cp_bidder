@@ -1,11 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useState, useEffect, use } from "react";
+import { useParams, redirect } from "next/navigation";
 import Link from "next/link";
 
 export default function RegisterPage({ params }) {
-  const router = useRouter();
-  const { contestId } = useParams(); // Extract contestId from the URL params
+  const { contestId } = use(params); // Extract contestId from the URL params
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -34,7 +33,7 @@ export default function RegisterPage({ params }) {
         const result = await response.json();
         if (result.status === "error") {
           setMessage(result.message); // Show the registration error message
-          router.push(`/contest/${contestId}/vote`);
+          window.location.href = `/contest/${contestId}/vote` // Redirect to the contest page
         }
       } catch (err) {
         console.error("Error checking registration:", err);
@@ -43,7 +42,7 @@ export default function RegisterPage({ params }) {
     };
 
     checkRegistration();
-  }, [contestId, router]);
+  }, [contestId]);
 
   const handleRegister = async () => {
     const user = JSON.parse(localStorage.getItem("user")); // Get user object from localStorage
@@ -57,15 +56,18 @@ export default function RegisterPage({ params }) {
     setLoading(true);
     setMessage(null);
 
+    console.log(userId);
+    console.log(contestId);
+
     try {
-      const response = await fetch("http://localhost:9090/registerContest", {
+      const response = await fetch("http://localhost:4000/registerContest", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          contestId,
-          userId,
+          user_id: userId,
+          contest_id: contestId,
         }),
       });
 
@@ -75,14 +77,17 @@ export default function RegisterPage({ params }) {
           result.message || "Successfully registered for the contest!"
         );
         // Redirect to the voting page after successful registration
-        router.push(`/contest/${contestId}/vote`);
+        window.location.href = `/contest/${contestId}/vote`;
+        
       } else {
-        const error = await response.json();
-        setMessage(error.message || "Failed to register for the contest.");
+        // const error = await response.json();
+        // setMessage(error.message || "Failed to register for the contest.");
+        // redirect(`/contest/${contestId}/vote`);
       }
     } catch (err) {
       console.error("Error during registration:", err);
-      setMessage("An error occurred while trying to register.");
+      setMessage(err.message);
+      // redirect(`/contest/${contestId}/vote`);
     } finally {
       setLoading(false);
     }

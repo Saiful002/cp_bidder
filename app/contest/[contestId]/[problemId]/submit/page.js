@@ -8,6 +8,7 @@ const SubmitSolutionPage = ({ params }) => {
   const [code, setCode] = useState("");
   const [verdict, setVerdict] = useState("");
   const [error, setError] = useState("");
+  const [isClicked, setIsClicked] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -61,6 +62,7 @@ const SubmitSolutionPage = ({ params }) => {
         <button
           type="submit"
           className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-full text-lg font-semibold"
+          onClick={() => setIsClicked(true)}
         >
           Submit
         </button>
@@ -76,6 +78,11 @@ const SubmitSolutionPage = ({ params }) => {
         <p className="mt-4 text-2xl font-bold text-green-500">
           Verdict: {verdict}
         </p>
+      )}
+
+      {!verdict && isClicked && (
+        // add a spinner
+        <p className="mt-4 text-2xl font-bold text-gray-300">Waiting for verdict...</p>
       )}
 
       {error && (

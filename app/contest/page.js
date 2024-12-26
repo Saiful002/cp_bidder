@@ -33,6 +33,11 @@ const ContestPage = () => {
             contest.status = "ongoing";
             updateContestStatus(contest.id, "Ongoing"); // Update status in the backend
           }
+
+          if(contest.end_time<currTime && contest.status === "Ongoing"){
+            contest.status = "Completed";
+            updateContestStatus(contest.id, "Completed");
+          }
           return contest;
         });
 
